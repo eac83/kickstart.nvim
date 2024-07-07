@@ -5,4 +5,5 @@
 return {
   'christoomey/vim-tmux-navigator',
   lazy = false,
+  'themercorp/themer.lua',
 }
