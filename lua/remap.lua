@@ -29,3 +29,6 @@ vim.keymap.set('v', '<Leader>d', '"_d')
 
 -- Remap <Esc>
 vim.keymap.set('i', 'kj', '<Esc>')
+
+-- Open Lazy
+vim.keymap.set('n', '<Leader>L', ':Lazy<CR>')
