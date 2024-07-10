@@ -846,6 +846,7 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      ignore_install = { 'latex' },
     },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
@@ -913,3 +914,10 @@ require('lazy').setup({
 
 -- Custom remaps
 require 'remap'
+
+-- Vimtex
+-- Viewer options
+vim.g.vimtex_view_method = 'zathura'
+
+-- Compiler
+vim.g.vimtex_compiler_method = 'latexmk'
