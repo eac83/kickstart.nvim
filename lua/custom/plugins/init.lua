@@ -6,4 +6,5 @@ return {
   'christoomey/vim-tmux-navigator',
   lazy = false,
   'themercorp/themer.lua',
+  'hiphish/rainbow-delimiters.nvim',
 }
