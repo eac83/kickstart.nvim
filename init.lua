@@ -105,7 +105,7 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.opt.mouse = ''
+vim.opt.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
@@ -242,23 +242,23 @@ require('lazy').setup({
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-  --    require('gitsigns').setup({ ... })
+  --require('gitsigns').setup()
   --
   -- See `:help gitsigns` to understand what the configuration keys do
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
+    --   opts = {
+    --     signs = {
+    --       add = { text = '+' },
+    --       change = { text = '~' },
+    --       delete = { text = '_' },
+    --       topdelete = { text = '‾' },
+    --       changedelete = { text = '~' },
+    --     },
+    --   },
   },
-
-  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
+  --
+  -- -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
   -- lazy loading plugins that don't need to be loaded immediately at startup.
@@ -272,7 +272,6 @@ require('lazy').setup({
   -- Then, because we use the `config` key, the configuration only runs
   -- after the plugin has been loaded:
   --  config = function() ... end
-
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -429,7 +428,7 @@ require('lazy').setup({
 
       -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
-      { 'folke/neodev.nvim', opts = {} },
+      -- { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -584,7 +583,7 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
         --
-
+        fortls = {},
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -614,6 +613,12 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'mypy',
+        'black',
+        'isort',
+        'pyright',
+        'debugpy',
+        'flake8',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -791,7 +796,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'catppuccin'
+      -- vim.cmd.colorscheme 'catppuccin-mocha'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -822,17 +827,17 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      --      local statusline = require 'mini.statusline'
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      --     statusline.setup { use_icons = vim.g.have_nerd_font }
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- ---@diagnostic disable-next-line: duplicate-set-field
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      --  end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -842,7 +847,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'python' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'python', 'fortran' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -922,6 +927,14 @@ require('lazy').setup({
 -- Custom remaps
 require 'remap'
 
+-- Lualine
+require('lualine').setup {
+  options = {
+    theme = 'catppuccin',
+    -- ... the rest of your lualine config
+  },
+}
+
 -- Vimtex
 -- Viewer options
 vim.g.vimtex_view_method = 'zathura'
@@ -934,8 +947,87 @@ vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 
 vim.o.termguicolors = true
 
--- Lualine
-require('lualine').setup()
-
 -- fzf
 vim.keymap.set('n', '<c-P>', require('fzf-lua').files, { desc = 'Fzf Files' })
+
+--- Python
+vim.cmd [[
+    autocmd FileType python nnoremap <buffer> <F8> :w<cr>:term python3 %<cr> i
+]]
+
+vim.cmd [[
+    autocmd FileType python nnoremap <buffer> <F6> :w<cr>:term python3 -m pdb %<cr> i
+]]
+
+--- Vertical line
+-- vim.cmd 'set colorcolumn=89'
+
+--- none-ls
+local null_ls = require 'null-ls'
+
+null_ls.setup {
+  sources = {
+    null_ls.builtins.formatting.stylua,
+  },
+}
+
+-- numb
+require('numb').setup()
+
+-- bufferline
+require('bufferline').setup {
+  options = {
+    diagnostics = 'nvim_lsp',
+    numbers = 'ordinal',
+    diagnostics_indicator = function(count, level, diagnostics_dict, context)
+      local s = ' '
+      for e, n in pairs(diagnostics_dict) do
+        local sym = e == 'error' and ' ' or (e == 'warning' and ' ' or ' ')
+        s = s .. n .. sym
+      end
+      return s
+    end,
+    offsets = {
+      {
+        filetype = 'neo-tree',
+        text = 'File Explorer',
+        text_align = 'center',
+        seperator = true,
+      },
+      {
+        filetype = 'undotree',
+        text = 'Undotree',
+        text_align = 'center',
+        seperator = true,
+      },
+    },
+    color_icons = true,
+    separator_style = 'thick',
+    always_show_bufferline = false,
+    auto_toggle = true,
+  },
+  highlights = require('catppuccin.groups.integrations.bufferline').get(),
+}
+
+-- NeoColumn
+require('NeoColumn').setup()
+
+-- Fugitive
+vim.keymap.set('n', '<leader>gs', ':Git<CR>', { desc = 'Git status' })
+
+-- alpha
+require('alpha').setup(require('alpha.themes.startify').opts)
+
+-- nvim-lspimport
+vim.keymap.set('n', '<leader>a', require('lspimport').import, { noremap = true })
+
+-- Catppuccin
+require('catppuccin').setup {
+  lsp_trouble = true,
+  transparent_background = true,
+}
+vim.cmd.colorscheme 'catppuccin-mocha'
+
+vim.cmd [[
+  highlight BufferLineFill guibg=none
+]]
